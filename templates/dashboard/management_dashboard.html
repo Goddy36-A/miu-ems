@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Management Dashboard{% endblock %}
+{% block content %}
+<h2>Organizational Performance Dashboard</h2>
+<div class="metric-cards">
+  <div class="metric-card"><div class="value">{{ workforce_size }}</div><div class="label">Workforce Size</div></div>
+  <div class="metric-card"><div class="value">{{ leave_pending }}</div><div class="label">Pending Leave</div></div>
+  <div class="metric-card"><div class="value">{{ review_completion|default:"—" }}{% if review_completion %}%{% endif %}</div><div class="label">Review Completion</div></div>
+  <div class="metric-card"><div class="value">{{ avg_performance_score|default:"—" }}</div><div class="label">Avg. Performance Score</div></div>
+</div>
+<h3>Employees by Department</h3>
+<table class="miu-table"><thead><tr><th>Department</th><th>Count</th></tr></thead><tbody>
+{% for d in by_department %}<tr><td>{{ d.name }}</td><td>{{ d.count }}</td></tr>{% endfor %}
+</tbody></table>
+{% endblock %}

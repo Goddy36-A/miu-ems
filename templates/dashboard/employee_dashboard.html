@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}My Dashboard{% endblock %}
+{% block content %}
+<h2>Welcome, {{ employee.full_name|default:user.username }}</h2>
+{% if employee %}
+<p><strong>Employee ID:</strong> {{ employee.employee_id }} &middot; <strong>Department:</strong> {{ employee.department|default:"—" }} &middot; <strong>Position:</strong> {{ employee.position|default:"—" }}</p>
+<div class="metric-cards">
+  <div class="metric-card"><div class="value">{{ todays_attendance.get_status_display|default:"Not recorded" }}</div><div class="label">Today's Attendance</div></div>
+  <div class="metric-card"><div class="value">{{ pending_leave_count }}</div><div class="label">Pending Leave Requests</div></div>
+  <div class="metric-card"><div class="value">{{ attendance_summary.attendance_rate|default:"—" }}{% if attendance_summary.attendance_rate %}%{% endif %}</div><div class="label">Attendance Rate (This Month)</div></div>
+  <div class="metric-card"><div class="value">{{ latest_evaluation.get_stage_display|default:"—" }}</div><div class="label">Performance Review Status</div></div>
+</div>
+{% if latest_notification %}<div class="card"><strong>Latest Notification:</strong> {{ latest_notification.message }}</div>{% endif %}
+<h3>Leave Balances</h3>
+<table class="miu-table"><thead><tr><th>Type</th><th>Remaining</th></tr></thead><tbody>
+{% for b in leave_balances %}<tr><td>{{ b.leave_type }}</td><td>{{ b.remaining }}</td></tr>{% empty %}<tr><td colspan="2">No balances recorded.</td></tr>{% endfor %}
+</tbody></table>
+{% else %}
+<p>No employee profile is linked to your account yet. Contact HR to complete your setup.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}HR Dashboard{% endblock %}
+{% block content %}
+<h2>HR Dashboard</h2>
+<div class="metric-cards">
+  <div class="metric-card"><div class="value">{{ total_employees }}</div><div class="label">Total Employees</div></div>
+  <div class="metric-card"><div class="value">{{ active_employees }}</div><div class="label">Active Employees</div></div>
+  <div class="metric-card"><div class="value">{{ on_leave }}</div><div class="label">On Leave</div></div>
+  <div class="metric-card"><div class="value">{{ department_count }}</div><div class="label">Departments</div></div>
+  <div class="metric-card"><div class="value">{{ pending_leave }}</div><div class="label">Pending Leave Requests</div></div>
+  <div class="metric-card"><div class="value">{{ present_today }}</div><div class="label">Present Today</div></div>
+  <div class="metric-card"><div class="value">{{ review_completion|default:"—" }}{% if review_completion %}%{% endif %}</div><div class="label">Performance Review Completion</div></div>
+</div>
+{% endblock %}

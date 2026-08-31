@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Department Dashboard{% endblock %}
+{% block content %}
+<h2>{{ department.name|default:"My Department" }}</h2>
+<div class="metric-cards">
+  <div class="metric-card"><div class="value">{{ team_size|default:"—" }}</div><div class="label">Team Size</div></div>
+  <div class="metric-card"><div class="value">{{ pending_leave|default:"—" }}</div><div class="label">Pending Leave Approvals</div></div>
+</div>
+<p><a class="btn btn-primary" href="{% url 'leave:department_approvals' %}">Review Leave Approvals</a></p>
+{% endblock %}
