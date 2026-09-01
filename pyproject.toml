@@ -2,7 +2,7 @@
 name = "miu-employee-management-system"
 version = "0.1.0"
 description = "Metropolitan International University Employee Management System (MIU-EMS)"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
     "Django==6.1",
     "djangorestframework==3.18.0",
