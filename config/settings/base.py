@@ -179,10 +179,10 @@ MIU_BRANDING = {
     "INSTITUTION_SHORT_NAME": "MIU",
     "SYSTEM_NAME": "Employee Management System",
     "LOGO_STATIC_PATH": "miu/logo-placeholder.svg",
-    "IS_OFFICIAL_LOGO": False,  # flip to True only once a verified asset replaces the placeholder
-    "PRIMARY_COLOR": "#7A1F2B",    # placeholder maroon — verify against official brand guide
-    "SECONDARY_COLOR": "#1C2B4A",  # placeholder navy — verify against official brand guide
-    "ACCENT_COLOR": "#C9A24B",     # placeholder gold — verify against official brand guide
+    "IS_OFFICIAL_LOGO": False,
+    "PRIMARY_COLOR": "hsl(145, 65%, 28%)",   # MIU green
+    "SECONDARY_COLOR": "hsl(150, 50%, 20%)", # dark green
+    "ACCENT_COLOR": "hsl(38, 70%, 50%)",     # MIU gold
 }
 
 # ---------------------------------------------------------------------------
