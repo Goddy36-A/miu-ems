@@ -103,7 +103,7 @@ def seed_demo_data():
     from apps.departments.models   import Department, Position
     from apps.employees.models     import Employee
     from apps.leave_management.models import LeaveType
-    from apps.attendance.models    import AttendanceRecord
+    from apps.attendance.models    import Attendance
 
     User = get_user_model()
     today = datetime.date.today()
@@ -238,7 +238,7 @@ def seed_demo_data():
         att_count = 0
         for i, emp in enumerate(all_emps):
             status = att_statuses[i % len(att_statuses)]
-            _, created = AttendanceRecord.objects.get_or_create(
+            _, created = Attendance.objects.get_or_create(
                 employee=emp,
                 date=today,
                 defaults={
