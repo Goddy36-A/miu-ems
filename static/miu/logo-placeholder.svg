@@ -1,5 +1,35 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="MIU placeholder logo">
-  <circle cx="32" cy="32" r="30" fill="#7A1F2B"/>
-  <circle cx="32" cy="32" r="30" fill="none" stroke="#C9A24B" stroke-width="3"/>
-  <text x="32" y="39" font-family="Georgia, serif" font-size="20" fill="#FFFFFF" text-anchor="middle" font-weight="bold">MIU</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:hsl(145,65%,28%);stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:hsl(150,50%,20%);stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:hsl(38,70%,55%);stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:hsl(45,80%,60%);stop-opacity:1"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Shield body -->
+  <path d="M60 8 L100 22 L100 62 Q100 90 60 112 Q20 90 20 62 L20 22 Z"
+        fill="url(#shieldGrad)" stroke="hsl(38,70%,50%)" stroke-width="2.5"/>
+
+  <!-- Shield inner border -->
+  <path d="M60 16 L93 28 L93 62 Q93 86 60 105 Q27 86 27 62 L27 28 Z"
+        fill="none" stroke="hsl(38,80%,65%)" stroke-width="1" opacity="0.5"/>
+
+  <!-- Horizontal gold bar across middle of shield -->
+  <rect x="20" y="56" width="80" height="12" fill="url(#goldGrad)" opacity="0.9"/>
+
+  <!-- MIU letters -->
+  <text x="60" y="52" text-anchor="middle" font-family="Georgia,serif"
+        font-size="22" font-weight="bold" fill="hsl(38,80%,70%)" letter-spacing="2">MIU</text>
+
+  <!-- Star/laurel accent below bar -->
+  <text x="60" y="78" text-anchor="middle" font-family="Georgia,serif"
+        font-size="10" fill="hsl(38,80%,70%)" letter-spacing="1">&#9733; EST. 2008 &#9733;</text>
+
+  <!-- Bottom text arc simulation with straight text -->
+  <text x="60" y="100" text-anchor="middle" font-family="Arial,sans-serif"
+        font-size="5.5" font-weight="bold" fill="hsl(38,70%,65%)" letter-spacing="0.5">METROPOLITAN INTERNATIONAL</text>
 </svg>
