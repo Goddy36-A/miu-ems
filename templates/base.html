@@ -11,7 +11,7 @@
 <body>
 
 <header class="miu-header">
-    <img src="{% static miu_branding.LOGO_STATIC_PATH %}" alt="{{ miu_branding.INSTITUTION_SHORT_NAME }} logo">
+    <img src="{% static miu_branding.LOGO_STATIC_PATH %}" alt="{{ miu_branding.INSTITUTION_SHORT_NAME }} logo" class="miu-logo">
     <div class="titles">
         <div class="institution">{{ miu_branding.INSTITUTION_NAME }}</div>
         <div class="system-name">{{ miu_branding.SYSTEM_NAME }}</div>
@@ -21,7 +21,10 @@
     <div class="user-menu">
         <span>{{ user.get_full_name|default:user.username }} &middot; {{ user.get_role_display }}</span>
         <a href="{% url 'accounts:password_change' %}">Change Password</a>
-        <a href="{% url 'accounts:logout' %}">Logout</a>
+        <form method="post" action="{% url 'accounts:logout' %}" style="display:inline;margin:0;">
+            {% csrf_token %}
+            <button type="submit" class="logout-btn">Logout</button>
+        </form>
     </div>
     {% endif %}
 </header>
@@ -70,7 +73,6 @@
 
 <footer class="miu-footer">
     &copy; {% now "Y" %} {{ miu_branding.INSTITUTION_NAME }} — {{ miu_branding.SYSTEM_NAME }}
-    {% if not miu_branding.IS_OFFICIAL_LOGO %}<br><small>Demo branding — placeholder theme pending official brand assets.</small>{% endif %}
 </footer>
 
 </body>
