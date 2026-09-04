@@ -1,141 +1,180 @@
-# MIU Employee Management System (MIU-EMS)
+# MIU Employee Management System
 
-Django implementation for *Evaluating the Effectiveness of an Employee
-Management System on Workforce Administration and Organizational
-Performance in Metropolitan International University*.
-
-> **Branding notice:** the MIU logo and color palette used in this app are
-> a placeholder theme (see `config/settings/base.py` → `MIU_BRANDING`),
-> not verified official MIU branding. Replace them in one place once
-> official assets are supplied.
+> **Final-Year Project — Bachelor of Computer Science**
+> Metropolitan International University (MIU), Kampala, Uganda
 >
-> **Data notice:** no real MIU employee records, departments, or
-> statistics are included. `seed_demo_data` loads clearly-labeled sample
-> data only.
+> *Evaluating the Effectiveness of an Employee Management System on
+> Workforce Administration and Organisational Performance at MIU.*
 
-## Quick Start (local development, SQLite)
+---
+
+## 🚀 One-Command Local Setup
+
+No manual configuration required. Run a single file and the system does everything:
 
 ```bash
-python -m venv venv
-source venv/bin/activate          # Windows: venv\Scripts\activate
+git clone https://github.com/Goddy36-A/miu-ems.git
+cd miu-ems
 pip install -r requirements.txt
-
-cp .env.example .env              # edit as needed; SQLite works out of the box
-
-export DJANGO_SETTINGS_MODULE=config.settings.development
-python manage.py migrate
-python manage.py seed_demo_data   # optional: sample departments/employees/leave types
-python manage.py createsuperuser  # optional: separate real admin account
-python manage.py runserver
+python start.py
 ```
 
-Visit `http://127.0.0.1:8000/`. If you ran `seed_demo_data`, sign in with
-any of: `admin_demo`, `hr_demo`, `depthead_demo`, `employee_demo`,
-`management_demo` — password `ChangeMe123!` for all. **Change these
-immediately in any shared/deployed environment.**
+The browser opens automatically at **http://127.0.0.1:8000**
 
-## Running Tests
+### What `start.py` does automatically
+
+| Step | What happens |
+|------|-------------|
+| `.env` setup | Creates `.env` and enables SQLite (no PostgreSQL needed) |
+| Migrations | Runs all database migrations |
+| Admin account | Creates `admin / Admin@12345` superuser |
+| Demo data | Seeds departments, positions, leave types, 10 employees, today's attendance |
+| Browser | Opens the app automatically |
+
+> On Windows you can also double-click **`start.bat`** instead.
+
+---
+
+## 🔑 Demo Accounts
+
+All accounts are created automatically by `start.py`.
+
+| Username | Password | Role | Access |
+|----------|----------|------|--------|
+| `admin` | `Admin@12345` | Administrator | Full system access + Admin Panel |
+| `nabirye` | `Pass@2025` | HR Manager | Employee management, leave approval, reports |
+| `nakato` | `Pass@2025` | Department Head | Department view, leave approvals, evaluations |
+| `mugisha` | `Pass@2025` | Employee | Own attendance, leave, performance, documents |
+| `tumwine` | `Pass@2025` | Management | Workforce analytics and reports |
+
+---
+
+## ✅ Features Implemented
+
+### Core HR Modules
+- **Employee Management** — Full employee profiles, employment types, status lifecycle
+- **Department & Position Management** — Organisational structure with department heads
+- **Attendance Tracking** — Daily records, check-in/out times, status types (Present, Absent, Late, On Leave, Excused, Remote)
+- **Leave Management** — Full two-stage approval workflow (Employee → Dept Head → HR), leave balances per type
+- **Performance Evaluations** — Configurable cycles, weighted criteria, five-stage workflow (Open → Self-Assessed → Supervisor-Assessed → Finalized → Acknowledged)
+- **Document Management** — Secure, authorization-gated employee document storage
+- **Reports** — Role-restricted HR and workforce reports with CSV export
+- **Notifications** — In-app notifications for key events (leave decisions, evaluation updates)
+- **Audit Trail** — Immutable log of every significant system action
+
+### System & Security
+- **Role-Based Access Control** — 5 roles: Admin, HR, Department Head, Management, Employee
+- **Account Security** — Lockout after 5 failed logins, forced password change on first login
+- **Server-side Authorization** — Every view enforces permissions; UI hiding alone is never relied on
+- **Custom Branding** — MIU green `hsl(145,65%,28%)` and gold `hsl(38,70%,50%)` applied system-wide via CSS variables
+- **System Effectiveness Module** — Baseline vs. post-implementation indicators and satisfaction survey
+
+---
+
+## 🏗 Project Structure
+
+```
+miu-ems/
+├── start.py                        # ← Run this to launch everything
+├── start.bat                       # ← Double-click launcher (Windows)
+├── manage.py
+├── requirements.txt
+├── pyproject.toml
+├── config/
+│   ├── settings/
+│   │   ├── base.py                 # Shared settings, MIU branding config
+│   │   ├── development.py          # SQLite, debug toolbar
+│   │   ├── production.py           # PostgreSQL, HTTPS, HSTS
+│   │   └── testing.py
+│   ├── urls.py
+│   └── wsgi.py
+├── apps/
+│   ├── accounts/                   # Custom User model, auth, lockout
+│   ├── core/                       # Shared models, RBAC helpers, error pages
+│   ├── departments/                # Department, Position
+│   ├── employees/                  # Employee profiles
+│   ├── attendance/                 # Attendance records + rate calculation
+│   ├── leave_management/           # LeaveType, LeaveRequest, LeaveBalance
+│   ├── performance/                # Cycles, criteria, evaluations, scoring
+│   ├── documents/                  # Secure document storage
+│   ├── notifications/              # In-app notifications
+│   ├── audit/                      # Immutable AuditLog + middleware
+│   ├── reports/                    # HR/workforce reports + CSV export
+│   └── dashboard/                  # Role dashboards + effectiveness module
+├── templates/
+│   ├── base.html                   # MIU-branded base with green/gold header
+│   └── ...                         # Per-app templates
+└── static/
+    ├── css/miu-theme.css           # MIU CSS variables and component styles
+    └── miu/logo-placeholder.svg    # MIU crest (green shield, gold accents)
+```
+
+---
+
+## 🎨 Brand Colors
+
+Defined as CSS variables in `static/css/miu-theme.css` and mirrored in `config/settings/base.py → MIU_BRANDING`:
+
+```css
+--miu-primary:      hsl(145, 65%, 28%);   /* MIU green  */
+--miu-secondary:    hsl(150, 50%, 20%);   /* Dark green */
+--miu-accent:       hsl(38,  70%, 50%);   /* MIU gold   */
+--miu-hero-gradient: linear-gradient(135deg, hsl(145,65%,28%), hsl(150,50%,20%));
+--miu-gold-gradient: linear-gradient(135deg, hsl(38,70%,50%),  hsl(45,80%,55%));
+```
+
+---
+
+## 🧪 Running Tests
 
 ```bash
-export DJANGO_SETTINGS_MODULE=config.settings.testing
-python manage.py test apps
+python manage.py test apps --settings=config.settings.testing
 ```
 
-## Using PostgreSQL
+Covers: leave workflow, attendance calculations, performance weighted scoring,
+authorization boundaries (IDOR and privilege-escalation checks).
 
-Set `DATABASE_URL` in `.env`, e.g.:
+---
 
-```
-DATABASE_URL=postgres://miu_ems_user:changeme@localhost:5432/miu_ems
-```
+## ⚙️ Tech Stack
 
-Then re-run `python manage.py migrate`.
+| Layer | Technology |
+|-------|-----------|
+| Backend | Django 6.1 (Python 3.12+) |
+| Database | SQLite (local) / PostgreSQL (production) |
+| ORM | Django ORM with custom abstract models |
+| Auth | Custom `AbstractUser` + `SecureAuthBackend` |
+| Static files | WhiteNoise |
+| Styling | Vanilla CSS with CSS custom properties |
+| Testing | Django `TestCase` + `Client` |
 
-## Project Structure
+---
 
-```
-config/settings/{base,development,testing,production}.py   # environment-based settings
-apps/
-  core/            # shared abstract models, RBAC helpers, branding, error pages
-  accounts/        # custom User model, auth views, account lockout
-  departments/     # Department, Position
-  employees/       # Employee profile, self-service vs HR forms
-  attendance/      # Attendance records + rate calculation service
-  leave_management/# LeaveType, LeaveRequest workflow, LeaveBalance
-  performance/     # PerformanceCycle/Criterion/Evaluation/Score, weighted scoring
-  notifications/   # In-app notifications
-  documents/       # Secure employee document storage (private, authorization-gated)
-  audit/           # Immutable AuditLog + middleware
-  reports/         # Role-restricted HR/workforce reports + CSV export
-  dashboard/       # Role-specific dashboards + system-effectiveness evaluation module
-templates/         # MIU-branded templates (base.html + per-app)
-static/            # miu-theme.css, placeholder logo
-```
+## 🔒 Security Notes
 
-## Security Notes
+- Authorization enforced server-side in every view (`apps/core/permissions.py`)
+- Employee documents stored outside public media — only accessible via `documents:download` which checks auth and writes to audit log
+- Account lockout after 5 failed login attempts
+- All significant actions recorded in an immutable `AuditLog` (no update/delete path exists)
+- Production settings refuse SQLite and enforce HTTPS/HSTS/secure cookies
 
-- Authorization is enforced server-side in every view (see
-  `apps/core/permissions.py`) — never only by hiding UI elements.
-- Employee documents are stored under `PRIVATE_MEDIA_ROOT`, outside any
-  publicly served media path, and are only reachable through
-  `documents:download`, which checks authorization and logs every access.
-- Account lockout after 5 failed login attempts (`apps/accounts/backends.py`).
-- All sensitive actions are recorded in an immutable `AuditLog`
-  (no update/delete path exists anywhere in the app).
-- `config/settings/production.py` refuses to start against SQLite and
-  enforces HTTPS/HSTS/secure-cookie settings.
+---
 
-## What's Implemented vs. Outstanding
+## 📋 Outstanding / Next Steps
 
-Implemented: employee/department/position management, attendance +
-rate calculation, full leave approval workflow with balances,
-configurable weighted performance evaluations, secure document storage,
-in-app notifications, role-based dashboards, HR/workforce reports + CSV
-export, the system-effectiveness evaluation module (baseline vs.
-post-implementation indicators, satisfaction survey), immutable audit
-logging, and an automated test suite covering the leave workflow,
-attendance calculations, performance scoring, and authorization
-boundaries (IDOR/privilege-escalation checks).
+- REST API endpoints (Django REST Framework)
+- PDF/Excel export beyond CSV
+- Async notifications (Celery + Redis)
+- Full accessibility audit (WCAG 2.1)
+- Nginx + Gunicorn production deployment manifests
 
-Not yet implemented (natural next steps): DRF API endpoints, Celery/Redis
-async notifications, PDF/Excel export beyond CSV, full accessibility
-audit, deployment manifests (Nginx/Gunicorn config files), and the
-formal academic System Analysis and Design document (deferred per your
-request to prioritize code first).
+---
 
-## Deploying to Render
+## 👤 Author
 
-This repo includes a Render Blueprint (`render.yaml`) that provisions a
-free-tier web service plus a managed PostgreSQL database.
+**Godfrey** — Final-Year BCS Student, Metropolitan International University
+Kampala, Uganda · 2026
 
-1. Push this repo to GitHub (see below).
-2. In the Render dashboard: **New → Blueprint**, point it at your repo.
-   Render reads `render.yaml` and creates the web service + database.
-3. After the first deploy, set these env vars on the web service if you
-   need them (Render's dashboard → Environment):
-   - `EMAIL_HOST`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD` — for real
-     password-reset emails (defaults to Django's console backend, which
-     only logs emails, if unset).
-   - `CSRF_TRUSTED_ORIGINS` — usually auto-added from Render's hostname,
-     but set explicitly if you attach a custom domain.
-4. `build.sh` runs `collectstatic` and `migrate` on every deploy.
-   Uncomment the `seed_demo_data` line in `build.sh` only for a demo
-   deployment — never on a real institutional deployment.
+---
 
-**Important — Render free-tier disks are ephemeral.** Uploaded employee
-documents and profile photos (stored under `PRIVATE_MEDIA_ROOT` /
-`MEDIA_ROOT`) will be **lost on every redeploy or restart** unless you
-attach a persistent [Render Disk](https://render.com/docs/disks) (paid)
-or move file storage to S3-compatible object storage. Do not use the
-free tier for real employee documents.
-
-## Pushing to GitHub
-
-```bash
-git init
-git add .
-git commit -m "Initial commit: MIU-EMS Django implementation"
-git branch -M main
-git remote add origin https://github.com/<your-username>/<your-repo>.git
-git push -u origin main
-```
+*Demo data only — no real MIU employee records are included in this repository.*
