@@ -94,6 +94,33 @@ def create_admin():
     else:
         print(f"{YELLOW}⚠️  Could not auto-create admin:{RESET}", r.stderr.strip() or r.stdout.strip())
 
+def create_employee_profile():
+    """Create a demo employee profile and link it to admin."""
+    import django
+    django.setup()
+    from apps.employees.models import Employee
+    from django.contrib.auth import get_user_model
+    import datetime
+    User = get_user_model()
+    try:
+        admin = User.objects.get(username=ADMIN["username"])
+        if not Employee.objects.filter(user=admin).exists() and not Employee.objects.filter(email=ADMIN["email"]).exists():
+            emp = Employee.objects.create(
+                user=admin,
+                employee_id="MIU-ADMIN-001",
+                first_name="System",
+                last_name="Administrator",
+                email=ADMIN["email"],
+                employment_type="FULL_TIME",
+                employment_status="ACTIVE",
+                date_joined_org=datetime.date.today(),
+            )
+            ok(f"Employee profile created and linked to admin → {emp.employee_id}")
+        else:
+            ok("Employee profile already exists for admin")
+    except Exception as e:
+        print(f"\033[93m⚠️  Could not create employee profile: {e}\033[0m")
+
 def start_server():
     url = "http://127.0.0.1:8000"
     print(f"""
@@ -113,4 +140,5 @@ if __name__ == "__main__":
     fix_env()
     migrate()
     create_admin()
+    create_employee_profile()
     start_server()
