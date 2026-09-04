@@ -180,3 +180,19 @@ table.miu-table th { background: var(--miu-bg); font-weight: 600; color: var(--m
   .miu-sidebar a { white-space: nowrap; border-left: none; border-bottom: 3px solid transparent; }
   .miu-sidebar a.active { border-left: none; border-bottom: 3px solid var(--miu-accent); }
 }
+
+/* Logout button — matches header link style */
+.logout-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0;
+  text-decoration: none;
+  font-family: inherit;
+}
+.logout-btn:hover { text-decoration: underline; }
+
+/* Logo sizing in header */
+.miu-logo { height: 52px; width: 52px; }
