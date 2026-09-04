@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{{ miu_branding.SYSTEM_NAME }}{% endblock %} — {{ miu_branding.INSTITUTION_SHORT_NAME }}</title>
+    <link rel="icon" type="image/svg+xml" href="{% static miu_branding.LOGO_STATIC_PATH %}">
     <link rel="stylesheet" href="{% static 'css/miu-theme.css' %}">
     {% block extra_head %}{% endblock %}
 </head>
