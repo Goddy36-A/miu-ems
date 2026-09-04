@@ -18,9 +18,10 @@ YELLOW = "\033[93m"
 RESET  = "\033[0m"
 BOLD   = "\033[1m"
 
-def ok(msg):  print(f"{GREEN}✅ {msg}{RESET}")
-def err(msg): print(f"{RED}❌ {msg}{RESET}")
-def info(msg):print(f"{YELLOW}➜  {msg}{RESET}")
+def ok(msg):   print(f"{GREEN}✅ {msg}{RESET}")
+def err(msg):  print(f"{RED}❌ {msg}{RESET}")
+def info(msg): print(f"{YELLOW}➜  {msg}{RESET}")
+def hdr(msg):  print(f"\n{BOLD}{msg}{RESET}")
 
 def banner():
     print(f"""
@@ -31,11 +32,9 @@ def banner():
 """)
 
 def fix_env():
-    """Create or patch .env so SQLite is used locally."""
     if ENV_FILE.exists():
         lines = ENV_FILE.read_text(encoding="utf-8").splitlines()
-        patched = []
-        has_settings = False
+        patched, has_settings = [], False
         for line in lines:
             s = line.strip()
             if s.startswith("DATABASE_URL=postgresql") or s.startswith("DATABASE_URL=postgres"):
@@ -94,32 +93,180 @@ def create_admin():
     else:
         print(f"{YELLOW}⚠️  Could not auto-create admin:{RESET}", r.stderr.strip() or r.stdout.strip())
 
-def create_employee_profile():
-    """Create a demo employee profile and link it to admin."""
+def seed_demo_data():
+    """Seed realistic MIU demo data for presentation."""
     import django
     django.setup()
-    from apps.employees.models import Employee
-    from django.contrib.auth import get_user_model
+
     import datetime
+    from django.contrib.auth import get_user_model
+    from apps.departments.models   import Department, Position
+    from apps.employees.models     import Employee
+    from apps.leave_management.models import LeaveType
+    from apps.attendance.models    import AttendanceRecord
+
     User = get_user_model()
+    today = datetime.date.today()
+
+    hdr("Seeding demo data...")
+
+    # ── Departments ──────────────────────────────────────────────────
+    dept_data = [
+        ("Faculty of Computing & Information Technology", "FCIT"),
+        ("Faculty of Business & Management",              "FBM"),
+        ("Faculty of Education",                          "FED"),
+        ("Human Resources Department",                    "HRD"),
+        ("Finance Department",                            "FIN"),
+        ("Registry & Academic Affairs",                   "RAA"),
+    ]
+    depts = {}
+    for name, code in dept_data:
+        d, created = Department.objects.get_or_create(
+            code=code, defaults={"name": name}
+        )
+        depts[code] = d
+    ok(f"Departments ready ({len(depts)})")
+
+    # ── Positions ────────────────────────────────────────────────────
+    pos_data = [
+        ("Lecturer",              "FCIT"), ("Senior Lecturer",      "FCIT"),
+        ("HOD Computing",         "FCIT"), ("Lecturer",              "FBM"),
+        ("Senior Lecturer",       "FBM"),  ("Lecturer",              "FED"),
+        ("HR Officer",            "HRD"),  ("HR Manager",            "HRD"),
+        ("Finance Officer",       "FIN"),  ("Registrar",             "RAA"),
+        ("Assistant Registrar",   "RAA"),
+    ]
+    positions = {}
+    for title, dept_code in pos_data:
+        p, _ = Position.objects.get_or_create(
+            title=title, department=depts[dept_code]
+        )
+        positions[(title, dept_code)] = p
+    ok(f"Positions ready ({len(positions)})")
+
+    # ── Leave Types ──────────────────────────────────────────────────
+    leave_types = [
+        ("Annual Leave",        21, "Standard annual leave entitlement"),
+        ("Sick Leave",          10, "Medical/illness leave"),
+        ("Maternity Leave",     60, "Maternity leave for female staff"),
+        ("Paternity Leave",      5, "Paternity leave for male staff"),
+        ("Study Leave",         14, "Leave for academic or professional study"),
+        ("Compassionate Leave",  3, "Bereavement or family emergency"),
+        ("Unpaid Leave",         0, "Leave without pay, approved by management"),
+    ]
+    for name, days, desc in leave_types:
+        LeaveType.objects.get_or_create(
+            name=name, defaults={"default_annual_days": days, "description": desc}
+        )
+    ok(f"Leave types ready ({len(leave_types)})")
+
+    # ── Demo Employees ───────────────────────────────────────────────
+    employees_data = [
+        # (emp_id, first, last, email, dept_code, position_title, emp_type, username, password, role)
+        ("MIU-2023-001", "Grace",    "Nakato",    "g.nakato@miu.ac.ug",   "FCIT", "HOD Computing",      "FULL_TIME", "nakato",    "Pass@2025", "DEPARTMENT_HEAD"),
+        ("MIU-2023-002", "Robert",   "Mugisha",   "r.mugisha@miu.ac.ug",  "FCIT", "Senior Lecturer",    "FULL_TIME", "mugisha",   "Pass@2025", "EMPLOYEE"),
+        ("MIU-2023-003", "Patricia", "Auma",      "p.auma@miu.ac.ug",     "FBM",  "Lecturer",           "FULL_TIME", "auma",      "Pass@2025", "EMPLOYEE"),
+        ("MIU-2024-001", "David",    "Ssemakula", "d.ssemakula@miu.ac.ug","FED",  "Lecturer",           "FULL_TIME", "ssemakula", "Pass@2025", "EMPLOYEE"),
+        ("MIU-2022-001", "Florence", "Nabirye",   "f.nabirye@miu.ac.ug",  "HRD",  "HR Manager",         "FULL_TIME", "nabirye",   "Pass@2025", "HR"),
+        ("MIU-2022-002", "Joseph",   "Okello",    "j.okello@miu.ac.ug",   "HRD",  "HR Officer",         "FULL_TIME", "okello",    "Pass@2025", "HR"),
+        ("MIU-2021-001", "Sarah",    "Kyomugisha","s.kyomugisha@miu.ac.ug","FIN",  "Finance Officer",    "FULL_TIME", "kyomugisha","Pass@2025", "EMPLOYEE"),
+        ("MIU-2020-001", "Emmanuel", "Tumwine",   "e.tumwine@miu.ac.ug",  "RAA",  "Registrar",          "FULL_TIME", "tumwine",   "Pass@2025", "MANAGEMENT"),
+        ("MIU-2024-002", "Brenda",   "Atim",      "b.atim@miu.ac.ug",     "FBM",  "Senior Lecturer",    "FULL_TIME", "atim",      "Pass@2025", "EMPLOYEE"),
+        ("MIU-2024-003", "Moses",    "Wanyama",   "m.wanyama@miu.ac.ug",  "FCIT", "Lecturer",           "CONTRACT",  "wanyama",   "Pass@2025", "EMPLOYEE"),
+    ]
+
+    created_employees = []
+    for (eid, fn, ln, email, dept_code, pos_title, emp_type, uname, pwd, role) in employees_data:
+        # Create or get user account
+        user, u_created = User.objects.get_or_create(
+            username=uname,
+            defaults={"email": email, "first_name": fn, "last_name": ln, "role": role}
+        )
+        if u_created:
+            user.set_password(pwd)
+            user.save()
+
+        # Create or get employee profile
+        emp, e_created = Employee.objects.get_or_create(
+            employee_id=eid,
+            defaults={
+                "user": user,
+                "first_name": fn,
+                "last_name": ln,
+                "email": email,
+                "employment_type": emp_type,
+                "employment_status": "ACTIVE",
+                "date_joined_org": today.replace(year=int(eid.split("-")[1])),
+                "department": depts[dept_code],
+                "position": positions.get((pos_title, dept_code)),
+            }
+        )
+        if e_created and not emp.user:
+            emp.user = user
+            emp.save()
+        created_employees.append(emp)
+
+    ok(f"Demo employees ready ({len(created_employees)})")
+
+    # ── Link admin to employee profile ───────────────────────────────
     try:
-        admin = User.objects.get(username=ADMIN["username"])
-        if not Employee.objects.filter(user=admin).exists() and not Employee.objects.filter(email=ADMIN["email"]).exists():
-            emp = Employee.objects.create(
-                user=admin,
+        admin_user = User.objects.get(username=ADMIN["username"])
+        if not Employee.objects.filter(user=admin_user).exists():
+            emp, _ = Employee.objects.get_or_create(
                 employee_id="MIU-ADMIN-001",
-                first_name="System",
-                last_name="Administrator",
-                email=ADMIN["email"],
-                employment_type="FULL_TIME",
-                employment_status="ACTIVE",
-                date_joined_org=datetime.date.today(),
+                defaults={
+                    "user": admin_user,
+                    "first_name": "System",
+                    "last_name": "Administrator",
+                    "email": ADMIN["email"],
+                    "employment_type": "FULL_TIME",
+                    "employment_status": "ACTIVE",
+                    "date_joined_org": today,
+                }
             )
-            ok(f"Employee profile created and linked to admin → {emp.employee_id}")
+            ok("Admin employee profile linked")
         else:
-            ok("Employee profile already exists for admin")
+            ok("Admin employee profile already linked")
     except Exception as e:
-        print(f"\033[93m⚠️  Could not create employee profile: {e}\033[0m")
+        print(f"{YELLOW}⚠️  Admin profile: {e}{RESET}")
+
+    # ── Today's Attendance for all active employees ──────────────────
+    att_statuses = ["PRESENT","PRESENT","PRESENT","PRESENT","PRESENT",
+                    "PRESENT","LATE","PRESENT","PRESENT","ON_LEAVE"]
+    try:
+        all_emps = Employee.objects.filter(employment_status="ACTIVE")
+        att_count = 0
+        for i, emp in enumerate(all_emps):
+            status = att_statuses[i % len(att_statuses)]
+            _, created = AttendanceRecord.objects.get_or_create(
+                employee=emp,
+                date=today,
+                defaults={
+                    "status": status,
+                    "check_in_time": datetime.time(8, 0) if status == "PRESENT" else (
+                        datetime.time(9, 15) if status == "LATE" else None
+                    ),
+                }
+            )
+            if created:
+                att_count += 1
+        ok(f"Today's attendance seeded ({att_count} new records)")
+    except Exception as e:
+        print(f"{YELLOW}⚠️  Attendance seed skipped: {e}{RESET}")
+
+    hdr("Demo data ready.")
+    print(f"""
+  {BOLD}Demo accounts for presentation:{RESET}
+  ┌─────────────┬──────────────┬─────────────────┐
+  │ Username    │ Password     │ Role            │
+  ├─────────────┼──────────────┼─────────────────┤
+  │ admin       │ Admin@12345  │ Administrator   │
+  │ nabirye     │ Pass@2025    │ HR Manager      │
+  │ nakato      │ Pass@2025    │ Department Head │
+  │ mugisha     │ Pass@2025    │ Employee        │
+  │ tumwine     │ Pass@2025    │ Management      │
+  └─────────────┴──────────────┴─────────────────┘
+""")
 
 def start_server():
     url = "http://127.0.0.1:8000"
@@ -127,8 +274,6 @@ def start_server():
 {BOLD}🚀 Server starting...{RESET}
    App:   {url}
    Admin: {url}/admin
-
-   Login  →  {ADMIN['username']} / {ADMIN['password']}
    Stop   →  Ctrl+C
 """)
     time.sleep(1)
@@ -140,5 +285,5 @@ if __name__ == "__main__":
     fix_env()
     migrate()
     create_admin()
-    create_employee_profile()
+    seed_demo_data()
     start_server()
