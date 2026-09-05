@@ -9,7 +9,7 @@
       Welcome back — here is today's workforce snapshot.
     </p>
   </div>
-  <a href="{% url 'employees:new' %}" class="btn btn-primary">+ Add Employee</a>
+  <a href="{% url 'employees:create' %}" class="btn btn-primary">+ Add Employee</a>
 </div>
 
 <div class="metric-cards" style="margin-bottom:1.5rem;">
@@ -52,7 +52,7 @@
     <h3 style="margin-top:0;color:var(--miu-primary);font-size:1rem;">Quick Actions</h3>
     <div style="display:flex;flex-direction:column;gap:0.5rem;">
       <a href="{% url 'employees:list' %}"      class="btn btn-outline" style="text-align:center;">View All Employees</a>
-      <a href="{% url 'attendance:new' %}"      class="btn btn-outline" style="text-align:center;">Record Attendance</a>
+      <a href="{% url 'attendance:create' %}"      class="btn btn-outline" style="text-align:center;">Record Attendance</a>
       <a href="{% url 'leave:hr_review_queue' %}" class="btn btn-outline" style="text-align:center;">Review Leave Requests</a>
       <a href="{% url 'reports:hub' %}"         class="btn btn-outline" style="text-align:center;">Generate Reports</a>
     </div>
