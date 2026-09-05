@@ -96,6 +96,8 @@ def create_admin():
 def seed_demo_data():
     """Seed realistic MIU demo data for presentation."""
     import django
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", SETTINGS)
+    os.environ["DJANGO_SETTINGS_MODULE"] = SETTINGS
     django.setup()
 
     import datetime
@@ -281,6 +283,7 @@ def start_server():
     run(["runserver"])
 
 if __name__ == "__main__":
+    os.environ["DJANGO_SETTINGS_MODULE"] = SETTINGS
     banner()
     fix_env()
     migrate()
