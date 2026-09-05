@@ -92,6 +92,19 @@ def create_admin():
     else:
         print(f"{YELLOW}⚠️  Admin note: {r.stderr.strip() or r.stdout.strip()}{RESET}")
 
+    # Always ensure admin password is correct and account is unlocked
+    try:
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        u = User.objects.get(username=ADMIN["username"])
+        u.set_password(ADMIN["password"])
+        u.is_locked = False
+        u.failed_login_attempts = 0
+        u.save()
+        ok("Admin password confirmed and account unlocked")
+    except Exception as e:
+        print(f"{YELLOW}⚠️  Admin reset: {e}{RESET}")
+
 def seed_demo_data():
     """Seed realistic MIU demo data for presentation."""
     import django
