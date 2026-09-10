@@ -64,6 +64,35 @@ def install_deps():
     ok("Dependencies ready")
 
 
+def install_deps():
+    """Install packages one by one — skips any that fail (e.g. psycopg2 without PostgreSQL)."""
+    info("Installing dependencies...")
+    req_file = BASE_DIR / "requirements.txt"
+    if not req_file.exists():
+        print(f"{YELLOW}⚠️  requirements.txt not found — skipping{RESET}")
+        return
+
+    lines = req_file.read_text(encoding="utf-8").splitlines()
+    pkgs  = [l.strip() for l in lines if l.strip() and not l.strip().startswith("#")]
+    failed = []
+    for pkg in pkgs:
+        r = subprocess.run(
+            [sys.executable, "-m", "pip", "install", pkg, "-q",
+             "--only-binary=:all:", "--no-build-isolation"],
+            capture_output=True
+        )
+        if r.returncode != 0:
+            r2 = subprocess.run(
+                [sys.executable, "-m", "pip", "install", pkg, "-q"],
+                capture_output=True
+            )
+            if r2.returncode != 0:
+                failed.append(pkg)
+                print(f"{YELLOW}  ⚠ Skipped (not available locally): {pkg}{RESET}")
+    if failed:
+        print(f"{YELLOW}  Skipped {len(failed)} package(s) — normal for SQLite local setup.{RESET}")
+    ok("Dependencies ready")
+
 def fix_env():
     if ENV_FILE.exists():
         lines = ENV_FILE.read_text(encoding="utf-8").splitlines()
